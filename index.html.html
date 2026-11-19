@@ -1,0 +1,1641 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Lost &amp; Found Board</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,600;12..96,700;12..96,800&family=Figtree:wght@400;500;600;700&display=swap">
+<style>
+  :root {
+    --ink: #0f172a;
+    --ink-soft: #334155;
+    --muted: #64748b;
+    --paper: #f1f5f9;
+    --paper-dot: #cbd5e1;
+    --card: #ffffff;
+    --line: #e2e8f0;
+    --line-strong: #cbd5e1;
+    --lost: #2563eb;
+    --lost-soft: #eff6ff;
+    --lost-border: #bfdbfe;
+    --found: #059669;
+    --found-soft: #ecfdf5;
+    --found-border: #a7f3d0;
+    --string: #f59e0b;
+    --danger: #dc2626;
+    --on: #ffffff;
+    --shadow-sm: 0 1px 2px rgba(15, 23, 42, 0.05);
+    --shadow-md: 0 10px 25px -5px rgba(15, 23, 42, 0.07), 0 8px 10px -6px rgba(15, 23, 42, 0.04);
+    --shadow-lg: 0 20px 35px -8px rgba(15, 23, 42, 0.14), 0 8px 16px -6px rgba(15, 23, 42, 0.08);
+    --head: "Bricolage Grotesque", system-ui, sans-serif;
+    --body: "Figtree", system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+    box-sizing: border-box;
+    padding-top: env(safe-area-inset-top, 0px);
+    padding-bottom: env(safe-area-inset-bottom, 0px);
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      --ink: #f8fafc;
+      --ink-soft: #cbd5e1;
+      --muted: #94a3b8;
+      --paper: #0b1120;
+      --paper-dot: #1e293b;
+      --card: #131c31;
+      --line: #23304a;
+      --line-strong: #334155;
+      --lost: #60a5fa;
+      --lost-soft: rgba(59, 130, 246, 0.14);
+      --lost-border: rgba(96, 165, 250, 0.32);
+      --found: #34d399;
+      --found-soft: rgba(16, 185, 129, 0.14);
+      --found-border: rgba(52, 211, 153, 0.32);
+      --danger: #f87171;
+      --on: #09111e;
+      --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.3);
+      --shadow-md: 0 12px 28px -6px rgba(0, 0, 0, 0.45);
+      --shadow-lg: 0 24px 42px -10px rgba(0, 0, 0, 0.65);
+    }
+  }
+  :root[data-theme="dark"] {
+    --ink: #f8fafc;
+    --ink-soft: #cbd5e1;
+    --muted: #94a3b8;
+    --paper: #0b1120;
+    --paper-dot: #1e293b;
+    --card: #131c31;
+    --line: #23304a;
+    --line-strong: #334155;
+    --lost: #60a5fa;
+    --lost-soft: rgba(59, 130, 246, 0.14);
+    --lost-border: rgba(96, 165, 250, 0.32);
+    --found: #34d399;
+    --found-soft: rgba(16, 185, 129, 0.14);
+    --found-border: rgba(52, 211, 153, 0.32);
+    --danger: #f87171;
+    --on: #09111e;
+    --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.3);
+    --shadow-md: 0 12px 28px -6px rgba(0, 0, 0, 0.45);
+    --shadow-lg: 0 24px 42px -10px rgba(0, 0, 0, 0.65);
+  }
+  html { scroll-padding-top: env(safe-area-inset-top, 0px); }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0;
+    background-color: var(--paper);
+    background-image: radial-gradient(var(--paper-dot) 1px, transparent 1px);
+    background-size: 22px 22px;
+    color: var(--ink);
+    font: 400 16px/1.55 var(--body);
+    -webkit-font-smoothing: antialiased;
+  }
+  .wrap { max-width: 1120px; margin: 0 auto; padding: 0 20px; }
+  :focus-visible { outline: 3px solid var(--string); outline-offset: 2px; }
+  button, input, select, textarea { font: inherit; color: inherit; }
+
+  /* Top Nav */
+  .topnav-wrap {
+    position: sticky;
+    top: 0;
+    z-index: 15;
+    background: color-mix(in srgb, var(--paper) 84%, transparent);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    border-bottom: 1px solid var(--line);
+  }
+  .topnav {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 12px;
+    padding: 12px 20px;
+    max-width: 1120px;
+    margin: 0 auto;
+    flex-wrap: wrap;
+  }
+  .brand {
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    font: 800 1.15rem var(--head);
+    letter-spacing: -0.02em;
+  }
+  .brand-badge {
+    width: 32px;
+    height: 32px;
+    border-radius: 9px;
+    background: linear-gradient(135deg, var(--lost), var(--found));
+    color: #fff;
+    display: grid;
+    place-items: center;
+    box-shadow: var(--shadow-sm);
+  }
+  .brand-badge svg { width: 18px; height: 18px; stroke: currentColor; fill: none; stroke-width: 2.3; stroke-linecap: round; stroke-linejoin: round; }
+  .nav-right { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
+  .user-pill {
+    font-size: 0.86rem;
+    font-weight: 600;
+    color: var(--ink-soft);
+    background: var(--card);
+    border: 1px solid var(--line);
+    padding: 5px 12px;
+    border-radius: 99px;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    box-shadow: var(--shadow-sm);
+  }
+  .user-pill img { width: 22px; height: 22px; border-radius: 50%; object-fit: cover; border: 1px solid var(--found); }
+  .theme-btn {
+    width: 36px;
+    height: 36px;
+    padding: 0;
+    display: grid;
+    place-items: center;
+    border-radius: 99px;
+    border: 1px solid var(--line);
+    background: var(--card);
+    cursor: pointer;
+    box-shadow: var(--shadow-sm);
+    transition: border-color 0.15s, transform 0.15s;
+  }
+  .theme-btn:hover { border-color: var(--ink); transform: translateY(-1px); }
+  .theme-btn svg { width: 17px; height: 17px; stroke: currentColor; fill: none; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
+
+  /* Hero */
+  .hero-section { padding: 36px 20px 28px; }
+  .hero-card {
+    background: var(--card);
+    border: 1px solid var(--line);
+    border-radius: 22px;
+    padding: clamp(24px, 5vw, 44px);
+    box-shadow: var(--shadow-md);
+    position: relative;
+    overflow: hidden;
+  }
+  .hero-card::after {
+    content: "";
+    position: absolute;
+    inset: 0 0 auto 0;
+    height: 4px;
+    background: linear-gradient(90deg, var(--lost), var(--string), var(--found));
+  }
+  .hero-top {
+    display: grid;
+    grid-template-columns: 1.35fr 0.9fr;
+    gap: 28px;
+    align-items: center;
+  }
+  @media (max-width: 820px) { .hero-top { grid-template-columns: 1fr; } }
+  .eyebrow {
+    display: inline-flex;
+    align-items: center;
+    gap: 7px;
+    font-size: 0.8rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    color: var(--lost);
+    background: var(--lost-soft);
+    border: 1px solid var(--lost-border);
+    padding: 4px 12px;
+    border-radius: 99px;
+    margin-bottom: 14px;
+  }
+  h1 {
+    font: 800 clamp(2.1rem, 5.2vw, 3.6rem)/1.02 var(--head);
+    letter-spacing: -0.03em;
+    margin: 0 0 12px;
+  }
+  .lede {
+    font-size: 1.05rem;
+    color: var(--muted);
+    max-width: 52ch;
+    margin: 0 0 22px;
+  }
+  .find {
+    display: flex;
+    gap: 10px;
+    max-width: 600px;
+    position: relative;
+  }
+  .find-icon {
+    position: absolute;
+    left: 16px;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 19px;
+    height: 19px;
+    color: var(--muted);
+    pointer-events: none;
+  }
+  .find input {
+    flex: 1;
+    min-width: 0;
+    padding: 14px 16px 14px 44px;
+    font-size: 1rem;
+    border: 1.5px solid var(--line-strong);
+    border-radius: 12px;
+    background: var(--paper);
+    transition: border-color 0.15s, box-shadow 0.15s, background 0.15s;
+  }
+  .find input:focus {
+    background: var(--card);
+    border-color: var(--lost);
+    box-shadow: 0 0 0 4px var(--lost-soft);
+    outline: none;
+  }
+  .cta { display: flex; gap: 12px; flex-wrap: wrap; margin-top: 16px; }
+  .btn {
+    cursor: pointer;
+    border: 1.5px solid var(--ink);
+    border-radius: 12px;
+    padding: 11px 18px;
+    font-weight: 700;
+    font-size: 0.95rem;
+    background: var(--ink);
+    color: var(--paper);
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    transition: transform 0.14s ease, box-shadow 0.14s ease, opacity 0.14s ease, border-color 0.14s ease;
+  }
+  .btn:hover:not(:disabled) { transform: translateY(-1px); box-shadow: var(--shadow-sm); }
+  .btn:active:not(:disabled) { transform: translateY(0); }
+  .btn svg { width: 17px; height: 17px; stroke: currentColor; fill: none; stroke-width: 2.2; stroke-linecap: round; stroke-linejoin: round; flex: none; }
+  .btn.lost { background: var(--lost); border-color: var(--lost); color: var(--on); }
+  .btn.found { background: var(--found); border-color: var(--found); color: var(--on); }
+  .btn:disabled { opacity: 0.5; cursor: not-allowed; }
+  .btn.ghost {
+    background: var(--card);
+    color: var(--ink);
+    border-color: var(--line-strong);
+    padding: 7px 12px;
+    font-size: 0.85rem;
+    border-radius: 9px;
+  }
+  .btn.ghost:hover:not(:disabled) { border-color: var(--ink); background: var(--paper); }
+  .note { color: var(--muted); font-size: 0.9rem; margin: 12px 0 0; }
+
+  /* Stats strip inside hero */
+  .stats-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 12px;
+  }
+  .stat-box {
+    background: var(--paper);
+    border: 1px solid var(--line);
+    border-radius: 14px;
+    padding: 16px 14px;
+    text-align: center;
+  }
+  .stat-num {
+    display: block;
+    font: 800 1.75rem/1.1 var(--head);
+    letter-spacing: -0.02em;
+  }
+  .stat-box.s-lost .stat-num { color: var(--lost); }
+  .stat-box.s-found .stat-num { color: var(--found); }
+  .stat-box.s-ret .stat-num { color: var(--string); }
+  .stat-lbl {
+    display: block;
+    font-size: 0.78rem;
+    font-weight: 600;
+    color: var(--muted);
+    margin-top: 4px;
+  }
+
+  /* Filter Bar */
+  .bar {
+    display: flex;
+    gap: 12px;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    background: var(--card);
+    border: 1px solid var(--line);
+    border-radius: 16px;
+    padding: 10px 14px;
+    margin-bottom: 24px;
+    box-shadow: var(--shadow-sm);
+  }
+  .tabs { display: flex; gap: 4px; flex-wrap: wrap; }
+  .tabs button {
+    cursor: pointer;
+    background: transparent;
+    border: 1px solid transparent;
+    border-radius: 10px;
+    padding: 7px 13px;
+    font-weight: 600;
+    font-size: 0.9rem;
+    color: var(--ink-soft);
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    transition: background 0.14s, color 0.14s;
+  }
+  .tabs button:hover { background: var(--paper); color: var(--ink); }
+  .tabs button[aria-pressed="true"] { background: var(--ink); color: var(--paper); }
+  .tabs svg { width: 15px; height: 15px; flex: none; fill: none; stroke: currentColor; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
+  .tabs b {
+    font-weight: 700;
+    font-size: 0.78rem;
+    padding: 1px 6px;
+    border-radius: 99px;
+    background: rgba(128, 128, 128, 0.16);
+  }
+  .tabs button[aria-pressed="true"] b { background: rgba(255, 255, 255, 0.22); }
+  .tools2 { display: flex; gap: 10px; align-items: center; flex-wrap: wrap; }
+  .bar select {
+    padding: 8px 12px;
+    border: 1.5px solid var(--line-strong);
+    border-radius: 10px;
+    background: var(--paper);
+    font-weight: 600;
+    font-size: 0.88rem;
+    cursor: pointer;
+  }
+
+  /* Luggage Tag Cards Grid */
+  .grid {
+    list-style: none;
+    margin: 0;
+    padding: 0 0 80px;
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(310px, 1fr));
+    gap: 28px 22px;
+  }
+  .tag-wrap {
+    position: relative;
+    filter: drop-shadow(0 6px 14px rgba(15, 23, 42, 0.07));
+    transition: transform 0.18s ease, filter 0.18s ease;
+  }
+  .tag-wrap:hover {
+    transform: translateY(-3px);
+    filter: drop-shadow(0 14px 24px rgba(15, 23, 42, 0.12));
+  }
+  /* String loop above tag */
+  .tag-wrap::before {
+    content: "";
+    position: absolute;
+    top: 2px;
+    left: 50%;
+    width: 2px;
+    height: 18px;
+    margin-left: -1px;
+    background: var(--string);
+    z-index: 2;
+    border-radius: 2px;
+  }
+  .tag {
+    position: relative;
+    margin-top: 14px;
+    background: var(--card);
+    border: 1px solid var(--line);
+    border-radius: 10px 10px 16px 16px;
+    padding: 36px 20px 18px;
+    clip-path: polygon(11% 0, 89% 0, 100% 16px, 100% 100%, 0 100%, 0 16px);
+    border-top: 0;
+    display: flex;
+    flex-direction: column;
+    height: calc(100% - 14px);
+  }
+  .tag::before {
+    content: "";
+    position: absolute;
+    inset: 0 0 auto 0;
+    height: 9px;
+    background: var(--lost);
+  }
+  .tag.found::before { background: var(--found); }
+  .tag .hole {
+    position: absolute;
+    top: 15px;
+    left: 50%;
+    width: 15px;
+    height: 15px;
+    margin-left: -7.5px;
+    border-radius: 50%;
+    background: var(--paper);
+    border: 3px solid var(--string);
+    box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.18);
+  }
+  .tag.done { opacity: 0.93; }
+
+  .kind {
+    font: 800 0.82rem var(--head);
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    color: var(--lost);
+    display: flex;
+    gap: 6px;
+    align-items: center;
+    margin-bottom: 10px;
+    flex-wrap: wrap;
+  }
+  .kind-badge {
+    padding: 3px 10px;
+    border-radius: 99px;
+    background: var(--lost-soft);
+    border: 1px solid var(--lost-border);
+  }
+  .found .kind { color: var(--found); }
+  .found .kind-badge {
+    background: var(--found-soft);
+    border-color: var(--found-border);
+  }
+  .pill {
+    font: 700 0.72rem var(--body);
+    text-transform: none;
+    letter-spacing: 0;
+    padding: 3px 9px;
+    border-radius: 99px;
+    background: var(--ink);
+    color: var(--paper);
+  }
+  .pill.verified { background: var(--found); color: var(--on); }
+
+  .photo-box {
+    position: relative;
+    margin: 0 0 12px;
+    border-radius: 10px;
+    overflow: hidden;
+    border: 1px solid var(--line);
+    background: var(--paper);
+  }
+  .photo {
+    display: block;
+    width: 100%;
+    height: 185px;
+    object-fit: cover;
+    cursor: zoom-in;
+    transition: transform 0.25s ease;
+  }
+  .photo-box:hover .photo { transform: scale(1.03); }
+
+  .tag h3 {
+    font: 800 1.28rem/1.2 var(--head);
+    letter-spacing: -0.015em;
+    margin: 0 0 8px;
+    overflow-wrap: anywhere;
+  }
+  .meta-list {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    margin: 0 0 10px;
+    color: var(--muted);
+    font-size: 0.88rem;
+  }
+  .meta-item {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+  .meta-item svg { width: 14px; height: 14px; stroke: currentColor; fill: none; stroke-width: 2; flex: none; }
+  .meta-item a { color: var(--ink-soft); text-decoration: none; font-weight: 600; border-bottom: 1px dashed var(--line-strong); }
+  .meta-item a:hover { color: var(--lost); border-bottom-color: var(--lost); }
+
+  .desc {
+    margin: 0 0 14px;
+    color: var(--ink-soft);
+    font-size: 0.94rem;
+    overflow-wrap: anywhere;
+  }
+  .spacer { flex: 1; }
+
+  .acts {
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
+    padding-top: 12px;
+    border-top: 1px dashed var(--line-strong);
+  }
+  .contact, .owner-box {
+    margin: 12px 0 0;
+    padding: 12px;
+    background: var(--paper);
+    border: 1px solid var(--line);
+    border-radius: 10px;
+    font-weight: 500;
+    overflow-wrap: anywhere;
+    font-size: 0.88rem;
+    line-height: 1.48;
+  }
+  .owner-box {
+    background: var(--found-soft);
+    border-color: var(--found-border);
+    border-left: 4px solid var(--found);
+  }
+  .owner-header { display: flex; align-items: center; gap: 10px; margin-bottom: 8px; }
+  .owner-avatar { width: 44px; height: 44px; border-radius: 50%; object-fit: cover; border: 2px solid var(--found); flex-shrink: 0; background: var(--card); }
+  .proof-photos { display: grid; grid-template-columns: repeat(auto-fit, minmax(105px, 1fr)); gap: 8px; margin-top: 10px; }
+  .proof-thumb { border: 1px solid var(--line); border-radius: 8px; overflow: hidden; background: var(--card); text-align: center; }
+  .proof-thumb img { display: block; width: 100%; height: 84px; object-fit: cover; cursor: zoom-in; }
+  .proof-thumb span { display: block; font-size: 0.72rem; color: var(--muted); padding: 4px; font-weight: 700; }
+  .contact a, .owner-box a { color: inherit; font-weight: 700; }
+
+  .empty {
+    grid-column: 1 / -1;
+    text-align: center;
+    padding: 56px 24px;
+    color: var(--muted);
+    background: var(--card);
+    border: 2px dashed var(--line-strong);
+    border-radius: 18px;
+  }
+  .empty strong { display: block; font: 800 1.2rem var(--head); color: var(--ink); margin-bottom: 4px; }
+
+  /* Dialogs */
+  dialog {
+    width: min(540px, calc(100vw - 24px));
+    max-height: calc(100vh - 32px);
+    overflow-y: auto;
+    border: 1px solid var(--line-strong);
+    border-radius: 18px;
+    padding: 0;
+    background: var(--card);
+    color: var(--ink);
+    box-shadow: var(--shadow-lg);
+  }
+  dialog::backdrop {
+    background: rgba(9, 13, 24, 0.62);
+    backdrop-filter: blur(4px);
+    -webkit-backdrop-filter: blur(4px);
+  }
+  .dlg { padding: 24px; }
+  .dlg h2 { font: 800 1.55rem var(--head); letter-spacing: -0.02em; margin: 0 0 6px; }
+  .dlg label { display: block; font-weight: 600; font-size: 0.9rem; margin: 14px 0 5px; color: var(--ink-soft); }
+  .dlg input:not([type="radio"]):not([type="checkbox"]), .dlg select, .dlg textarea {
+    width: 100%;
+    padding: 10px 12px;
+    background: var(--paper);
+    border: 1.5px solid var(--line-strong);
+    border-radius: 10px;
+    transition: border-color 0.15s, background 0.15s;
+  }
+  .dlg input:not([type="radio"]):not([type="checkbox"]):focus, .dlg select:focus, .dlg textarea:focus {
+    background: var(--card);
+    border-color: var(--lost);
+    outline: none;
+  }
+  .dlg textarea { min-height: 78px; resize: vertical; }
+  .row2 { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+  @media (max-width: 480px) { .row2 { grid-template-columns: 1fr; } .find { flex-direction: column; } .stats-grid { grid-template-columns: repeat(3, 1fr); gap: 8px; } }
+  .seg { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-top: 12px; }
+  .seg input { position: absolute; opacity: 0; width: 1px; height: 1px; }
+  .seg label { margin: 0; text-align: center; padding: 10px; border: 1.5px solid var(--line-strong); border-radius: 10px; cursor: pointer; font-weight: 700; background: var(--paper); }
+  #t-lost:checked + label { background: var(--lost); border-color: var(--lost); color: var(--on); }
+  #t-found:checked + label { background: var(--found); border-color: var(--found); color: var(--on); }
+  .seg input:focus-visible + label { outline: 3px solid var(--string); outline-offset: 2px; }
+  .dlg .foot { display: flex; gap: 10px; justify-content: flex-end; margin-top: 22px; padding-top: 14px; border-top: 1px solid var(--line); }
+
+  .toast {
+    position: fixed;
+    left: 50%;
+    bottom: calc(22px + env(safe-area-inset-bottom, 0px));
+    transform: translateX(-50%);
+    background: var(--ink);
+    color: var(--paper);
+    padding: 11px 18px;
+    border-radius: 12px;
+    font-weight: 600;
+    font-size: 0.92rem;
+    max-width: calc(100vw - 32px);
+    box-shadow: var(--shadow-lg);
+    z-index: 25;
+  }
+  .toast[hidden] { display: none; }
+
+  @media (prefers-reduced-motion: no-preference) {
+    .tag-wrap.fresh { animation: swing 0.75s ease-out; transform-origin: 50% 0; }
+    @keyframes swing { 0% { transform: rotate(-4deg); } 40% { transform: rotate(2.5deg); } 70% { transform: rotate(-1deg); } 100% { transform: none; } }
+  }
+  .authtabs { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-top: 12px; }
+  .authtabs button { cursor: pointer; padding: 9px; border: 1.5px solid var(--line-strong); border-radius: 10px; background: var(--paper); font-weight: 700; }
+  .authtabs button[aria-pressed="true"] { background: var(--ink); color: var(--paper); border-color: var(--ink); }
+  .dlg .chk { display: flex; gap: 8px; align-items: center; font-weight: 500; cursor: pointer; }
+  .dlg .chk input { width: auto; }
+  .preview-img { display: block; max-width: 140px; max-height: 110px; border-radius: 10px; margin-top: 8px; border: 1px solid var(--line-strong); object-fit: cover; }
+  .proof-section { margin-top: 14px; padding: 14px; border: 1px solid var(--line-strong); border-radius: 12px; background: var(--paper); }
+  .proof-section h4 { margin: 0 0 4px; font: 800 0.95rem var(--head); }
+  .proof-section label { margin-top: 10px; }
+  #img-zoom-dlg { width: auto; max-width: min(92vw, 760px); background: transparent; border: 0; padding: 0; overflow: visible; box-shadow: none; }
+  #img-zoom-dlg img { display: block; max-width: 100%; max-height: 82vh; border-radius: 14px; border: 2px solid var(--card); background: var(--card); box-shadow: var(--shadow-lg); }
+</style>
+</head>
+<body>
+
+<div class="topnav-wrap">
+  <nav class="topnav" aria-label="Account and theme">
+    <div class="brand">
+      <span class="brand-badge" aria-hidden="true">
+        <svg viewBox="0 0 24 24"><path d="M12 2L2 7l10 5 10-5-10-5z"/><path d="M2 17l10 5 10-5"/><path d="M2 12l10 5 10-5"/></svg>
+      </span>
+      <span>Lost &amp; Found Board</span>
+    </div>
+    <div class="nav-right">
+      <span class="user-pill" id="user-status-text">Not signed in</span>
+      <button class="btn ghost" id="nav-auth-btn" type="button">Sign In / Register</button>
+      <button class="theme-btn" id="theme-toggle" type="button" aria-label="Toggle color theme" title="Toggle light/dark theme">
+        <svg id="theme-icon" viewBox="0 0 24 24"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M6.34 17.66l-1.41 1.41M19.07 4.93l-1.41 1.41"/></svg>
+      </button>
+    </div>
+  </nav>
+</div>
+
+<header class="wrap hero-section">
+  <div class="hero-card">
+    <div class="hero-top">
+      <div>
+        <span class="eyebrow">Community Tag Board</span>
+        <h1>Lost something? Found something?</h1>
+        <p class="lede">Post misplaced belongings, verify ownership with security checks and photo proof, and reunite items safely.</p>
+        <div class="find">
+          <svg class="find-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg>
+          <input id="q" type="search" placeholder="Search by item, place, category or owner…" aria-label="Search items">
+        </div>
+        <div class="cta">
+          <button class="btn lost" type="button" data-post="lost">
+            <svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg>
+            I lost something
+          </button>
+          <button class="btn found" type="button" data-post="found">
+            <svg viewBox="0 0 24 24"><path d="M22 11.1V12a10 10 0 1 1-5.9-9.1"/><path d="m9 11 3 3L22 4"/></svg>
+            I found something
+          </button>
+        </div>
+      </div>
+
+      <div class="stats-grid" aria-label="Board summary">
+        <div class="stat-box s-lost">
+          <span class="stat-num" id="stat-lost">0</span>
+          <span class="stat-lbl">Open Lost</span>
+        </div>
+        <div class="stat-box s-found">
+          <span class="stat-num" id="stat-found">0</span>
+          <span class="stat-lbl">Open Found</span>
+        </div>
+        <div class="stat-box s-ret">
+          <span class="stat-num" id="stat-ret">0</span>
+          <span class="stat-lbl">Reunited</span>
+        </div>
+      </div>
+    </div>
+    <p class="note" id="mode-note" hidden></p>
+  </div>
+</header>
+
+<main class="wrap">
+  <div class="bar">
+    <div class="tabs" id="tabs" role="group" aria-label="Show items"></div>
+    <div class="tools2">
+      <select id="sort" aria-label="Sort items">
+        <option value="newest">Newest first</option>
+        <option value="oldest">Oldest first</option>
+      </select>
+      <select id="cat" aria-label="Category"></select>
+    </div>
+  </div>
+  <ul class="grid" id="grid" aria-live="polite"></ul>
+</main>
+
+<!-- Dialog for Posting Items -->
+<dialog id="dlg" aria-labelledby="dlg-title">
+  <form class="dlg" id="form" novalidate>
+    <h2 id="dlg-title">Post an item</h2>
+    <div class="seg" role="radiogroup" aria-label="Item type">
+      <input type="radio" name="type" id="t-lost" value="lost" checked><label for="t-lost">I lost it</label>
+      <input type="radio" name="type" id="t-found" value="found"><label for="t-found">I found it</label>
+    </div>
+    <label for="title">What is it?</label>
+    <input id="title" name="title" maxlength="60" required placeholder="Black leather wallet">
+    <div class="row2">
+      <div><label for="category">Category</label><select id="category" name="category"></select></div>
+      <div><label for="date">Date</label><input id="date" name="date" type="date" required></div>
+    </div>
+    <label for="place">Where?</label>
+    <input id="place" name="place" maxlength="80" required placeholder="Library, second floor">
+    <label for="desc">Details that identify it</label>
+    <textarea id="desc" name="desc" maxlength="300" placeholder="Colour, brand, marks. Keep one detail back to check the owner."></textarea>
+    <label for="photo">Photo of item (optional)</label>
+    <input id="photo" name="photo" type="file" accept="image/*">
+    <label class="chk" id="rm-photo-row" hidden><input type="checkbox" id="rm-photo"> Remove current photo</label>
+    <div id="vrow" hidden>
+      <label for="verify">Security question only the real owner can answer</label>
+      <input id="verify" name="verify" maxlength="100" placeholder="What is the lock screen wallpaper?">
+      <label for="vans">Correct answer (hidden from everyone)</label>
+      <input id="vans" name="vans" maxlength="60" autocomplete="off" placeholder="e.g. a photo of a dog">
+      <p class="note">Don’t put the answer in the description. A claimer gets 3 tries; when it matches, their proof &amp; details are recorded on the item.</p>
+    </div>
+    <div id="staffrow" hidden><label for="stored">Where is it kept now? (optional)</label><input id="stored" name="stored" maxlength="60" placeholder="Front desk, shelf B3"></div>
+    <label for="contact">How should people reach you?</label>
+    <input id="contact" name="contact" maxlength="80" required placeholder="Email or phone number">
+    <p class="note" id="err" role="alert" style="color: var(--danger)"></p>
+    <div class="foot">
+      <button type="button" class="btn ghost" id="cancel">Cancel</button>
+      <button type="submit" class="btn">Post item</button>
+    </div>
+  </form>
+</dialog>
+
+<!-- Dialog for Sign In / Create Account -->
+<dialog id="auth-dlg" aria-labelledby="auth-dlg-title">
+  <form class="dlg" id="auth-form" novalidate>
+    <h2 id="auth-dlg-title">Your account</h2>
+    <p class="note" style="margin-top:0">An account lets you post items, verify ownership with photo proof, and be contacted.</p>
+    <div class="authtabs" role="group" aria-label="Account mode">
+      <button type="button" id="mode-in" aria-pressed="true">Sign in</button>
+      <button type="button" id="mode-reg" aria-pressed="false">Create account</button>
+    </div>
+    <div class="reg" hidden><label for="auth-name">Full name</label>
+      <input id="auth-name" name="name" autocomplete="name" placeholder="Jane Doe"></div>
+    <label for="auth-email">Email address</label>
+    <input id="auth-email" name="email" type="email" autocomplete="email" placeholder="jane@example.com">
+    <div class="reg" hidden><label for="auth-phone">Phone number</label>
+      <input id="auth-phone" name="phone" type="tel" autocomplete="tel" placeholder="+63 912 345 6789"></div>
+    <div class="reg" hidden><label for="auth-idno">School / work ID number (optional)</label>
+      <input id="auth-idno" name="idno" placeholder="e.g. 2026-10482"></div>
+    <div class="reg" hidden><label for="auth-avatar">Your profile photo / selfie (recommended for proof)</label>
+      <input id="auth-avatar" name="avatar" type="file" accept="image/*" capture="user">
+      <img id="auth-avatar-prev" class="preview-img" alt="Profile preview" hidden></div>
+    <label for="auth-pass">Password</label>
+    <input id="auth-pass" name="password" type="password" placeholder="At least 8 characters">
+    <div class="reg" hidden><label for="auth-pass2">Confirm password</label>
+      <input id="auth-pass2" name="confirm" type="password" autocomplete="new-password" placeholder="Repeat password"></div>
+    <label class="chk"><input type="checkbox" id="auth-show"> Show password</label>
+    <p class="note" id="auth-err" role="alert" style="color: var(--danger)"></p>
+    <div class="foot">
+      <button type="button" class="btn ghost" id="auth-cancel">Cancel</button>
+      <button type="submit" class="btn" id="auth-submit">Sign in</button>
+    </div>
+  </form>
+</dialog>
+
+<!-- Dialog for Ownership Verification & Claiming -->
+<dialog id="verify-dlg" aria-labelledby="verify-dlg-title">
+  <form class="dlg" id="verify-form" novalidate>
+    <h2 id="verify-dlg-title">Verify Ownership</h2>
+    <p class="note" style="margin-top:0" id="verify-prompt-text">Answer the security check and attach visual proof so the finder can confirm the item belongs to you.</p>
+
+    <div id="verify-q-box" class="contact" style="background:var(--paper); margin-bottom: 12px;"></div>
+
+    <label for="verify-answer">Security answer *</label>
+    <input id="verify-answer" name="answer" required placeholder="Type the security answer here...">
+
+    <div class="proof-section">
+      <h4>Owner Verification Proof</h4>
+      <p class="note" style="margin-top:2px">Your photo and proof are saved on the handover record so the finder can verify your identity.</p>
+
+      <label for="verify-selfie">1. Your photo / selfie (required) *</label>
+      <input id="verify-selfie" type="file" accept="image/*" capture="user">
+      <img id="verify-selfie-prev" class="preview-img" alt="Owner selfie preview" hidden>
+
+      <label for="verify-id-photo">2. Photo of ID card or proof of purchase/ownership (optional)</label>
+      <input id="verify-id-photo" type="file" accept="image/*">
+      <img id="verify-id-prev" class="preview-img" alt="ID or receipt preview" hidden>
+
+      <label for="verify-note">3. Additional proof note (serial #, receipt #, or extra details)</label>
+      <textarea id="verify-note" maxlength="250" placeholder="e.g. Serial ends in 8842, has a scratch near the charging port, or student ID #2026-10482."></textarea>
+    </div>
+
+    <p class="note" id="verify-err" role="alert" style="color: var(--danger)"></p>
+    <div class="foot">
+      <button type="button" class="btn ghost" id="verify-cancel">Cancel</button>
+      <button type="submit" class="btn found">Confirm &amp; Claim Item</button>
+    </div>
+  </form>
+</dialog>
+
+<!-- Dialog for Handover Proof when Finder marks Found Item Returned -->
+<dialog id="handover-dlg" aria-labelledby="handover-dlg-title">
+  <form class="dlg" id="handover-form" novalidate>
+    <h2 id="handover-dlg-title">Record Owner Handover</h2>
+    <p class="note" style="margin-top:0">Record the owner’s details and optional photo proof before marking this item as returned.</p>
+
+    <label for="ho-name">Owner’s full name *</label>
+    <input id="ho-name" required placeholder="Check their ID first">
+
+    <div class="row2">
+      <div><label for="ho-contact">Email or phone *</label><input id="ho-contact" required placeholder="jane@example.com or +63..."></div>
+      <div><label for="ho-idno">ID number checked (optional)</label><input id="ho-idno" placeholder="e.g. Student/Gov ID #"></div>
+    </div>
+
+    <div class="proof-section">
+      <h4>Visual Proof of Handover (optional)</h4>
+      <label for="ho-owner-photo">Photo of owner / handover selfie</label>
+      <input id="ho-owner-photo" type="file" accept="image/*" capture="user">
+      <img id="ho-owner-prev" class="preview-img" alt="Owner photo preview" hidden>
+
+      <label for="ho-id-photo">Photo of ID / signed receipt</label>
+      <input id="ho-id-photo" type="file" accept="image/*">
+      <img id="ho-id-prev" class="preview-img" alt="ID proof preview" hidden>
+
+      <label for="ho-note">Verification notes</label>
+      <input id="ho-note" maxlength="160" placeholder="e.g. Verified student ID and unlocked phone in person">
+    </div>
+
+    <p class="note" id="ho-err" role="alert" style="color: var(--danger)"></p>
+    <div class="foot">
+      <button type="button" class="btn ghost" id="ho-cancel">Cancel</button>
+      <button type="submit" class="btn found">Complete Handover</button>
+    </div>
+  </form>
+</dialog>
+
+<!-- Full-size Proof Image Viewer -->
+<dialog id="img-zoom-dlg" aria-label="Full size proof photo">
+  <div style="text-align:center;">
+    <img id="img-zoom-target" src="" alt="Proof photo">
+    <div style="margin-top:12px;"><button type="button" class="btn" id="img-zoom-close">Close</button></div>
+  </div>
+</dialog>
+
+<div class="toast" id="toast" role="status" hidden></div>
+
+<script>
+(function () {
+  "use strict";
+  let CATS = ["Wallet & cards", "Phone & electronics", "Keys", "Bag & clothing", "Pet", "Documents", "Other"];
+  let LS = "lostfound.board.v4";
+  let THEME_LS = "lostfound.theme.v1";
+  let $ = function (id) { return document.getElementById(id); };
+  let items = [], tab = "all", fresh = null, loaded = false;
+  let S = { mode: "local", canWrite: true, canEdit: true, me: "local", db: null };
+
+  // Current logged in user state
+  let currentUser = null;
+  let activeClaimItem = null;
+  let activeHandoverItem = null;
+
+  let USERS_LS = "lostfound.users.v1", SESS_LS = "lostfound.session.v1", regMode = false;
+  let mem = {}, persist = true;
+  try { localStorage.setItem("lf.t", "1"); localStorage.removeItem("lf.t"); } catch (e) { persist = false; }
+  function sget(k) { try { let v = localStorage.getItem(k); if (v !== null) return v; } catch (e) { persist = false; } return mem[k] === undefined ? null : mem[k]; }
+  function sset(k, v) {
+    mem[k] = v;
+    try { localStorage.setItem(k, v); }
+    catch (e) {
+      if (e && (e.name === "QuotaExceededError" || e.code === 22)) throw e;
+      persist = false;
+    }
+  }
+  function sdel(k) { delete mem[k]; try { localStorage.removeItem(k); } catch (e) { /* ignore */ } }
+
+  /* Theme toggle */
+  function isDark() {
+    let t = document.documentElement.getAttribute("data-theme");
+    if (t === "dark") return true;
+    if (t === "light") return false;
+    return window.matchMedia && window.matchMedia("(prefers-color-scheme: dark)").matches;
+  }
+  function syncThemeIcon() {
+    let ic = $("theme-icon");
+    if (!ic) return;
+    ic.innerHTML = isDark()
+      ? '<circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M6.34 17.66l-1.41 1.41M19.07 4.93l-1.41 1.41"/>'
+      : '<path d="M12 3a6 6 0 0 0 9 9 9 9 0 1 1-9-9Z"/>';
+  }
+  (function initTheme() {
+    let saved = sget(THEME_LS);
+    if (saved === "dark" || saved === "light") document.documentElement.setAttribute("data-theme", saved);
+    syncThemeIcon();
+  })();
+  $("theme-toggle").addEventListener("click", function () {
+    let next = isDark() ? "light" : "dark";
+    document.documentElement.setAttribute("data-theme", next);
+    sset(THEME_LS, next);
+    syncThemeIcon();
+  });
+
+  function users() { try { return JSON.parse(sget(USERS_LS)) || []; } catch (e) { return []; } }
+  function saveUsers(u) { sset(USERS_LS, JSON.stringify(u)); }
+  function norm(t) { return String(t).trim().toLowerCase().replace(/\s+/g, " "); }
+  function salt() { return Math.random().toString(36).slice(2) + Date.now().toString(36); }
+  let K = [], H0 = [];
+  (function () {
+    let n = 2, c = 0;
+    while (c < 64) {
+      let ok = true; for (let d = 2; d * d <= n; d++) if (n % d === 0) { ok = false; break; }
+      if (ok) { if (c < 8) H0[c] = Math.floor((Math.pow(n, 0.5) % 1) * 4294967296); K[c] = Math.floor((Math.pow(n, 1 / 3) % 1) * 4294967296); c++; }
+      n++;
+    }
+  })();
+  function sha(t) {
+    let b = Array.from(new TextEncoder().encode(t)), l = b.length * 8;
+    b.push(0x80); while (b.length % 64 !== 56) b.push(0);
+    let hi = Math.floor(l / 4294967296), lo = l >>> 0;
+    b.push(hi >>> 24 & 255, hi >>> 16 & 255, hi >>> 8 & 255, hi & 255, lo >>> 24 & 255, lo >>> 16 & 255, lo >>> 8 & 255, lo & 255);
+    let h = H0.slice(), w = new Array(64);
+    function R(x, n) { return (x >>> n) | (x << (32 - n)); }
+    for (let i = 0; i < b.length; i += 64) {
+      for (let j = 0; j < 16; j++) w[j] = (b[i + 4 * j] << 24 | b[i + 4 * j + 1] << 16 | b[i + 4 * j + 2] << 8 | b[i + 4 * j + 3]) | 0;
+      for (let j = 16; j < 64; j++) {
+        let s0 = R(w[j - 15], 7) ^ R(w[j - 15], 18) ^ (w[j - 15] >>> 3), s1 = R(w[j - 2], 17) ^ R(w[j - 2], 19) ^ (w[j - 2] >>> 10);
+        w[j] = (w[j - 16] + s0 + w[j - 7] + s1) | 0;
+      }
+      let a = h[0], bb = h[1], c = h[2], d = h[3], e = h[4], f = h[5], g = h[6], hh = h[7];
+      for (let j = 0; j < 64; j++) {
+        let t1 = (hh + (R(e, 6) ^ R(e, 11) ^ R(e, 25)) + ((e & f) ^ (~e & g)) + K[j] + w[j]) | 0;
+        let t2 = ((R(a, 2) ^ R(a, 13) ^ R(a, 22)) + ((a & bb) ^ (a & c) ^ (bb & c))) | 0;
+        hh = g; g = f; f = e; e = (d + t1) | 0; d = c; c = bb; bb = a; a = (t1 + t2) | 0;
+      }
+      h = [(h[0] + a) | 0, (h[1] + bb) | 0, (h[2] + c) | 0, (h[3] + d) | 0, (h[4] + e) | 0, (h[5] + f) | 0, (h[6] + g) | 0, (h[7] + hh) | 0];
+    }
+    return h.map(function (x) { return (x >>> 0).toString(16).padStart(8, "0"); }).join("");
+  }
+  function loadUserSession() {
+    try { let e = sget(SESS_LS); currentUser = e ? (users().find(function (u) { return u.email === e; }) || null) : null; }
+    catch (er) { currentUser = null; }
+  }
+  function saveUserSession() { if (currentUser) sset(SESS_LS, currentUser.email); else sdel(SESS_LS); }
+
+  let ICONS = {
+    all: ["M22 12h-6l-2 3h-4l-2-3H2", "M5.5 5.1 2 12v6a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2v-6l-3.5-6.9A2 2 0 0 0 16.7 4H7.2a2 2 0 0 0-1.7 1.1z"],
+    lost: ["M11 19a8 8 0 1 0 0-16 8 8 0 0 0 0 16z", "m21 21-4.3-4.3"],
+    found: ["M22 11.1V12a10 10 0 1 1-5.9-9.1", "m9 11 3 3L22 4"],
+    mine: ["M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2", "M12 11a4 4 0 1 0 0-8 4 4 0 0 0 0 8z"],
+    returned: ["M9 14 4 9l5-5", "M4 9h10.5a5.5 5.5 0 0 1 0 11H11"],
+    archived: ["M21 8v13H3V8", "M1 3h22v5H1z", "M10 12h4"]
+  };
+  function icon(name) {
+    let ns = "http://www.w3.org/2000/svg", svg = document.createElementNS(ns, "svg");
+    svg.setAttribute("viewBox", "0 0 24 24"); svg.setAttribute("aria-hidden", "true");
+    (ICONS[name] || []).forEach(function (d) { let p = document.createElementNS(ns, "path"); p.setAttribute("d", d); svg.appendChild(p); });
+    return svg;
+  }
+  function miniIcon(paths) {
+    let ns = "http://www.w3.org/2000/svg", svg = document.createElementNS(ns, "svg");
+    svg.setAttribute("viewBox", "0 0 24 24"); svg.setAttribute("aria-hidden", "true");
+    paths.forEach(function (d) { let p = document.createElementNS(ns, "path"); p.setAttribute("d", d); svg.appendChild(p); });
+    return svg;
+  }
+  function el(tag, cls, text) { let e = document.createElement(tag); if (cls) e.className = cls; if (text !== undefined) e.textContent = text; return e; }
+  function today() { let d = new Date(); d.setMinutes(d.getMinutes() - d.getTimezoneOffset()); return d.toISOString().slice(0, 10); }
+  function fmt(s) { let d = new Date(s + "T00:00:00"); return isNaN(d) ? s : d.toLocaleDateString(undefined, { day: "numeric", month: "short", year: "numeric" }); }
+  let flagCount = {};
+  function stateOf(it) {
+    if (it.status === "returned") return "returned";
+    let t = new Date((it.date || "") + "T00:00:00").getTime();
+    return t && Date.now() - t > 60 * 864e5 ? "archived" : "open";
+  }
+  function reportCount(it) { return flagCount[it.id] || it.reports || 0; }
+  function isHidden(it) { return reportCount(it) >= 3 && !S.canEdit; }
+  function readPhoto(file, maxDim) {
+    maxDim = maxDim || 640;
+    return new Promise(function (res, rej) {
+      let r = new FileReader();
+      r.onerror = function () { rej(new Error("read")); };
+      r.onload = function () {
+        let img = new Image();
+        img.onerror = function () { rej(new Error("image")); };
+        img.onload = function () {
+          let s = Math.min(1, maxDim / Math.max(img.width, img.height)), c = document.createElement("canvas");
+          c.width = Math.max(1, Math.round(img.width * s)); c.height = Math.max(1, Math.round(img.height * s));
+          c.getContext("2d").drawImage(img, 0, 0, c.width, c.height);
+          res(c.toDataURL("image/jpeg", 0.72));
+        };
+        img.src = r.result;
+      };
+      r.readAsDataURL(file);
+    });
+  }
+  function bindPreview(inputEl, imgEl) {
+    inputEl.addEventListener("change", async function () {
+      let f = inputEl.files && inputEl.files[0];
+      if (!f) { imgEl.hidden = true; imgEl.src = ""; return; }
+      try {
+        imgEl.src = await readPhoto(f, 360);
+        imgEl.hidden = false;
+      } catch (e) {
+        imgEl.hidden = true;
+      }
+    });
+  }
+  function toast(msg) { let t = $("toast"); t.textContent = msg; t.hidden = false; clearTimeout(toast.t); toast.t = setTimeout(function () { t.hidden = true; }, 3500); }
+
+  function lsRead() { try { return JSON.parse(sget(LS)) || []; } catch (e) { return []; } }
+  function lsWrite() { sset(LS, JSON.stringify(items)); }
+
+  function openZoom(src, alt) {
+    $("img-zoom-target").src = src;
+    $("img-zoom-target").alt = alt || "Proof photo";
+    let d = $("img-zoom-dlg");
+    if (d.showModal) d.showModal(); else d.setAttribute("open", "");
+  }
+  $("img-zoom-close").addEventListener("click", function () {
+    let d = $("img-zoom-dlg");
+    if (d.close) d.close(); else d.removeAttribute("open");
+  });
+  $("img-zoom-dlg").addEventListener("click", function (e) {
+    if (e.target === $("img-zoom-dlg")) {
+      if (this.close) this.close(); else this.removeAttribute("open");
+    }
+  });
+
+  async function init() {
+    loadUserSession();
+    updateUserUI();
+    if (!persist) { let n = $("mode-note"); n.hidden = false; n.textContent = "Saving is blocked in this view, so accounts and posts will be lost when you close the page. Open lost_and_found.html directly in Chrome, Edge, Firefox or Safari to keep them."; }
+    items = lsRead(); loaded = true;
+    S.canEdit = true; S.canWrite = true;
+    render();
+  }
+
+  function updateUserUI() {
+    let stat = $("user-status-text");
+    let btn = $("nav-auth-btn");
+    stat.textContent = "";
+    if (currentUser) {
+      if (currentUser.avatar) {
+        let av = el("img"); av.src = currentUser.avatar; av.alt = currentUser.name;
+        stat.appendChild(av);
+      }
+      stat.appendChild(document.createTextNode(currentUser.name));
+      btn.textContent = "Sign Out";
+      S.me = currentUser.email;
+    } else {
+      stat.textContent = "Guest";
+      btn.textContent = "Sign In / Register";
+      S.me = "local";
+    }
+  }
+
+  async function patchItem(it, patch) {
+    Object.assign(it, patch);
+    lsWrite();
+    render();
+  }
+  async function removeItem(it) {
+    items = items.filter(function (x) { return x.id !== it.id; });
+    lsWrite();
+    render();
+  }
+  function guard(p, okMsg) {
+    p.then(function () { if (okMsg) toast(okMsg); })
+     .catch(function (e) {
+       if (e && (e.name === "QuotaExceededError" || e.code === 22)) {
+         toast("Storage is full. Try deleting older posts or using smaller photos.");
+       } else {
+         toast("That didn’t save. Check your inputs and try again.");
+       }
+     });
+  }
+
+  /* ---------- rendering cards ---------- */
+  function card(it) {
+    let done = it.status === "returned";
+    let wrap = el("li", "tag-wrap" + (it.id === fresh ? " fresh" : ""));
+    let li = el("article", "tag " + it.type + (done ? " done" : ""));
+    li.appendChild(el("span", "hole"));
+
+    let k = el("div", "kind");
+    k.appendChild(el("span", "kind-badge", it.type === "lost" ? "Lost" : "Found"));
+    if (done) {
+      k.appendChild(el("span", "pill", "Returned"));
+      if (it.ownerInfo && (it.ownerInfo.ownerPhoto || it.ownerInfo.idPhoto)) {
+        k.appendChild(el("span", "pill verified", "Photo Verified"));
+      }
+    } else if (stateOf(it) === "archived") {
+      k.appendChild(el("span", "pill", "Archived"));
+    }
+    li.appendChild(k);
+
+    if (it.photo) {
+      let pbox = el("div", "photo-box");
+      let im = el("img", "photo"); im.src = it.photo; im.alt = it.title;
+      im.addEventListener("click", function () { openZoom(it.photo, it.title); });
+      pbox.appendChild(im);
+      li.appendChild(pbox);
+    }
+
+    li.appendChild(el("h3", "", it.title));
+
+    let metaList = el("div", "meta-list");
+    let m1 = el("div", "meta-item");
+    m1.appendChild(miniIcon(["M4 7h16", "M4 12h16", "M4 17h10"]));
+    m1.appendChild(document.createTextNode(it.category + " · " + fmt(it.date)));
+    metaList.appendChild(m1);
+
+    let m2 = el("div", "meta-item");
+    m2.appendChild(miniIcon(["M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0Z", "M12 10a2 2 0 1 0 0-4 2 2 0 0 0 0 4Z"]));
+    let ml = el("a", "", it.place);
+    ml.href = "https://www.google.com/maps/search/?api=1&query=" + encodeURIComponent(it.place);
+    ml.target = "_blank"; ml.rel = "noopener noreferrer"; ml.title = "Open in maps";
+    m2.appendChild(ml);
+    metaList.appendChild(m2);
+
+    if (it.stored) {
+      let m3 = el("div", "meta-item");
+      m3.appendChild(miniIcon(["M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"]));
+      m3.appendChild(document.createTextNode("Stored at: " + it.stored));
+      metaList.appendChild(m3);
+    }
+    li.appendChild(metaList);
+
+    if (it.desc) li.appendChild(el("p", "desc", it.desc));
+    li.appendChild(el("div", "spacer"));
+
+    if (done && it.ownerInfo) {
+      let o = it.ownerInfo, ob = el("div", "owner-box");
+      let head = el("div", "owner-header");
+      if (o.ownerPhoto) {
+        let av = el("img", "owner-avatar");
+        av.src = o.ownerPhoto;
+        av.alt = "Photo of " + o.name;
+        av.title = "Click to enlarge owner photo";
+        av.style.cursor = "zoom-in";
+        av.addEventListener("click", function () { openZoom(o.ownerPhoto, "Owner: " + o.name); });
+        head.appendChild(av);
+      }
+      let titleWrap = el("div");
+      let strong = el("strong", "", "Verified Owner: " + o.name);
+      titleWrap.appendChild(strong);
+      if (o.idno) {
+        titleWrap.appendChild(document.createElement("br"));
+        titleWrap.appendChild(el("span", "", "ID #: " + o.idno));
+      }
+      head.appendChild(titleWrap);
+      ob.appendChild(head);
+
+      let details = el("div");
+      let isMail = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(o.email);
+      details.innerHTML =
+        "Contact: " + (isMail ? "<a href='mailto:" + escapeHtml(o.email) + "'>" + escapeHtml(o.email) + "</a>" : escapeHtml(o.email)) +
+        (o.phone ? "<br>Phone: " + escapeHtml(o.phone) : "") +
+        (o.how ? "<br>Method: " + escapeHtml(o.how) : "") +
+        (o.proofNote ? "<br>Proof details: " + escapeHtml(o.proofNote) : "") +
+        (it.returnedAt ? "<br>Returned on: " + new Date(it.returnedAt).toLocaleString(undefined, { dateStyle: "medium", timeStyle: "short" }) : "") +
+        (it.type === "found" && it.authorName ? "<br>Found by: " + escapeHtml(it.authorName) : "");
+      ob.appendChild(details);
+
+      if (o.ownerPhoto || o.idPhoto) {
+        let gallery = el("div", "proof-photos");
+        if (o.ownerPhoto) {
+          let box1 = el("div", "proof-thumb");
+          let img1 = el("img"); img1.src = o.ownerPhoto; img1.alt = "Owner photo";
+          img1.addEventListener("click", function () { openZoom(o.ownerPhoto, "Owner photo — " + o.name); });
+          box1.appendChild(img1);
+          box1.appendChild(el("span", "", "Owner Photo"));
+          gallery.appendChild(box1);
+        }
+        if (o.idPhoto) {
+          let box2 = el("div", "proof-thumb");
+          let img2 = el("img"); img2.src = o.idPhoto; img2.alt = "ID or receipt proof";
+          img2.addEventListener("click", function () { openZoom(o.idPhoto, "ID / Ownership proof — " + o.name); });
+          box2.appendChild(img2);
+          box2.appendChild(el("span", "", "ID / Ownership Proof"));
+          gallery.appendChild(box2);
+        }
+        ob.appendChild(gallery);
+      }
+      li.appendChild(ob);
+    }
+
+    let contact = el("p", "contact");
+    contact.hidden = true;
+    contact.appendChild(document.createTextNode("Contact: "));
+    if (/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(it.contact)) {
+      let a = el("a", "", it.contact); a.href = "mailto:" + it.contact; contact.appendChild(a);
+    } else contact.appendChild(document.createTextNode(it.contact));
+    if (it.verify) { contact.appendChild(document.createElement("br")); contact.appendChild(document.createTextNode("Security Question: " + it.verify)); }
+
+    let acts = el("div", "acts");
+    let show = el("button", "btn ghost", "Show contact");
+    show.type = "button"; show.setAttribute("aria-expanded", "false");
+    show.addEventListener("click", function () {
+      contact.hidden = !contact.hidden;
+      show.textContent = contact.hidden ? "Show contact" : "Hide contact";
+      show.setAttribute("aria-expanded", String(!contact.hidden));
+    });
+    acts.appendChild(show);
+
+    let own = !!currentUser && it.authorId === S.me;
+    if (!done && own) {
+      let b = el("button", "btn ghost", it.type === "lost" ? "I got it back" : "Handed to owner");
+      b.type = "button";
+      b.addEventListener("click", function () {
+        if (it.type === "lost") {
+          tab = "returned";
+          guard(patchItem(it, {
+            status: "returned",
+            returnedAt: Date.now(),
+            ownerInfo: {
+              name: currentUser.name,
+              email: currentUser.email,
+              phone: currentUser.phone,
+              idno: currentUser.idno || "",
+              ownerPhoto: currentUser.avatar || "",
+              how: "Marked recovered by original owner"
+            }
+          }), "Great, marked as recovered.");
+          return;
+        }
+        openHandoverDialog(it);
+      });
+      acts.appendChild(b);
+    }
+    if (!done && !own && it.type === "found") {
+      let c = el("button", "btn found", "This is mine");
+      c.type = "button"; c.addEventListener("click", function () { openVerifyDialog(it); });
+      acts.appendChild(c);
+    }
+    if (own) {
+      let ed = el("button", "btn ghost", "Edit");
+      ed.type = "button";
+      ed.addEventListener("click", function () { openPost(it.type, it); });
+      acts.appendChild(ed);
+      let d = el("button", "btn ghost", "Delete");
+      d.type = "button";
+      d.addEventListener("click", function () {
+        if (d.dataset.sure) { guard(removeItem(it), "Deleted."); return; }
+        d.dataset.sure = "1"; d.textContent = "Tap again to delete";
+        setTimeout(function () { d.dataset.sure = ""; d.textContent = "Delete"; }, 4000);
+      });
+      acts.appendChild(d);
+    }
+    li.appendChild(acts);
+    li.appendChild(contact);
+    wrap.appendChild(li);
+    return wrap;
+  }
+
+  function escapeHtml(str) {
+    return String(str).replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/'/g, "&#39;").replace(/"/g, "&quot;");
+  }
+
+  function render() {
+    let q = $("q").value.trim().toLowerCase(), cat = $("cat").value, sortBy = $("sort").value;
+    let totalLost = 0, totalFound = 0, totalReturned = 0;
+    items.forEach(function (it) {
+      if (isHidden(it)) return;
+      let s = stateOf(it);
+      if (s === "returned") totalReturned++;
+      else if (s === "open") {
+        if (it.type === "lost") totalLost++;
+        else totalFound++;
+      }
+    });
+    $("stat-lost").textContent = String(totalLost);
+    $("stat-found").textContent = String(totalFound);
+    $("stat-ret").textContent = String(totalReturned);
+
+    let counts = { all: 0, lost: 0, found: 0, mine: 0, returned: 0, archived: 0 };
+    let list = items.filter(function (it) {
+      let hay = (it.title + " " + it.place + " " + (it.desc || "") + " " + it.category + " " + (it.ownerInfo ? it.ownerInfo.name : "")).toLowerCase();
+      if (cat !== "all" && it.category !== cat) return false;
+      if (q && hay.indexOf(q) === -1) return false;
+      return true;
+    });
+    if (sortBy === "oldest") list = list.slice().reverse();
+
+    list.forEach(function (it) {
+      if (isHidden(it)) return;
+      let s = stateOf(it);
+      if (s === "returned") counts.returned++;
+      else if (s === "archived") counts.archived++;
+      else { counts.all++; counts[it.type]++; }
+      if (currentUser && it.authorId === S.me) counts.mine++;
+    });
+    let shown = list.filter(function (it) {
+      if (isHidden(it)) return false;
+      let s = stateOf(it);
+      if (tab === "returned" || tab === "archived") return s === tab;
+      if (tab === "mine") return !!currentUser && it.authorId === S.me;
+      return s === "open" && (tab === "all" || it.type === tab);
+    });
+
+    let tabs = $("tabs"); tabs.textContent = "";
+    let defs = [["all", "Open"], ["lost", "Lost"], ["found", "Found"], ["mine", "Mine"], ["returned", "Returned"], ["archived", "Archived"]];
+    defs.forEach(function (t) {
+      let b = el("button", "", ""); b.type = "button"; b.appendChild(icon(t[0])); b.appendChild(document.createTextNode(t[1]));
+      b.setAttribute("aria-pressed", String(tab === t[0]));
+      if (counts[t[0]] !== undefined) b.appendChild(el("b", "", String(counts[t[0]])));
+      b.addEventListener("click", function () { tab = t[0]; render(); });
+      tabs.appendChild(b);
+    });
+
+    let grid = $("grid"); grid.textContent = "";
+    if (!loaded) {
+      let em = el("li", "empty");
+      em.appendChild(el("strong", "", "Loading the board…"));
+      grid.appendChild(em);
+    } else if (!shown.length) {
+      let em = el("li", "empty");
+      em.appendChild(el("strong", "", items.length ? "No matching items" : "The board is empty"));
+      em.appendChild(document.createTextNode(items.length
+        ? "Try fewer search words, switch tabs, or clear the category filter."
+        : "Be the first to post a lost or found item above."));
+      grid.appendChild(em);
+    } else {
+      shown.forEach(function (it) { grid.appendChild(card(it)); });
+    }
+  }
+
+  /* ---------- Post Item Dialog Logic ---------- */
+  let dlg = $("dlg"), form = $("form");
+  let editing = null;
+  function openPost(type, it) {
+    if (!currentUser) {
+      toast("Please sign in or register an account before posting items.");
+      openAuthDialog();
+      return;
+    }
+    editing = it || null;
+    form.reset(); $("err").textContent = "";
+    $("rm-photo").checked = false;
+    $("rm-photo-row").hidden = !(it && it.photo);
+    $("dlg-title").textContent = it ? "Edit item" : "Post an item";
+    form.querySelector("[type=submit]").textContent = it ? "Save changes" : "Post item";
+    form.elements.type.value = type; $("date").value = today(); $("date").max = today(); syncType();
+    if (it) {
+      ["title", "category", "place", "date", "desc", "contact", "verify", "stored"].forEach(function (k) { form.elements[k].value = it[k] || ""; });
+    } else {
+      $("contact").value = currentUser.email;
+    }
+    if (dlg.showModal) dlg.showModal(); else dlg.setAttribute("open", "");
+    $("title").focus();
+  }
+  function closeDlg() { editing = null; if (dlg.close) dlg.close(); else dlg.removeAttribute("open"); }
+  dlg.addEventListener("close", function () { editing = null; });
+  document.querySelectorAll("[data-post]").forEach(function (b) { b.addEventListener("click", function () { openPost(b.dataset.post); }); });
+  $("cancel").addEventListener("click", closeDlg);
+  function syncType() { let f = form.elements.type.value === "found"; $("vrow").hidden = !f; $("staffrow").hidden = !f; }
+  form.querySelectorAll("[name=type]").forEach(function (r) { r.addEventListener("change", syncType); });
+
+  form.addEventListener("submit", async function (e) {
+    e.preventDefault();
+    let f = new FormData(form), o = {};
+    ["type", "title", "category", "place", "date", "desc", "contact", "verify", "stored"].forEach(function (k) { o[k] = String(f.get(k) || "").trim(); });
+    let miss = [];
+    if (!o.title) miss.push("what it is"); if (!o.place) miss.push("where"); if (!o.date) miss.push("the date"); if (!o.contact) miss.push("how to reach you");
+    let vans = String(f.get("vans") || "").trim();
+    if (o.type === "lost") o.verify = "";
+    else {
+      if (!o.verify) miss.push("a security question");
+      if (!vans && (!editing || !editing.verifyHash || o.verify !== editing.verify)) miss.push("its answer");
+    }
+    if (miss.length) { $("err").textContent = "Please add " + miss.join(", ") + "."; return; }
+    if (vans) { o.vsalt = salt(); o.verifyHash = sha(norm(vans) + o.vsalt); o.tries = {}; }
+    let pf = $("photo").files[0];
+    if (pf) {
+      try { o.photo = await readPhoto(pf); }
+      catch (er) { $("err").textContent = "That image couldn’t be read. Try a JPG or PNG."; return; }
+    } else if ($("rm-photo").checked) {
+      o.photo = "";
+    }
+    tab = "all"; $("q").value = ""; $("cat").value = "all";
+    let target = editing;
+    closeDlg();
+    if (target) { guard(patchItem(target, o), "Saved changes."); return; }
+    guard(addItem(o), "Posted to the board.");
+  });
+
+  async function addItem(o) {
+    o.created = Date.now(); o.status = "open"; o.authorId = S.me; o.authorName = currentUser.name;
+    o.id = String(o.created); fresh = o.id; items.unshift(o); lsWrite(); render();
+  }
+
+  /* ---------- Account Sign-In / Register Dialog Logic ---------- */
+  let authDlg = $("auth-dlg"), authForm = $("auth-form");
+  bindPreview($("auth-avatar"), $("auth-avatar-prev"));
+
+  function setMode(reg) {
+    regMode = reg;
+    $("mode-in").setAttribute("aria-pressed", String(!reg)); $("mode-reg").setAttribute("aria-pressed", String(reg));
+    authForm.querySelectorAll(".reg").forEach(function (n) { n.hidden = !reg; });
+    $("auth-pass").autocomplete = reg ? "new-password" : "current-password";
+    $("auth-submit").textContent = reg ? "Create account" : "Sign in";
+    $("auth-err").textContent = "";
+  }
+  function openAuthDialog() {
+    authForm.reset();
+    $("auth-avatar-prev").hidden = true;
+    $("auth-avatar-prev").src = "";
+    $("auth-pass").type = "password";
+    $("auth-pass2").type = "password";
+    setMode(!users().length);
+    if (authDlg.showModal) authDlg.showModal(); else authDlg.setAttribute("open", "");
+  }
+  function closeAuthDialog() { if (authDlg.close) authDlg.close(); else authDlg.removeAttribute("open"); }
+
+  $("nav-auth-btn").addEventListener("click", function () {
+    if (currentUser) {
+      if (confirm("Do you want to sign out from " + currentUser.email + "?")) {
+        currentUser = null;
+        saveUserSession();
+        updateUserUI();
+        render();
+        toast("Signed out successfully.");
+      }
+    } else {
+      openAuthDialog();
+    }
+  });
+  $("auth-cancel").addEventListener("click", closeAuthDialog);
+
+  $("mode-in").addEventListener("click", function () { setMode(false); });
+  $("mode-reg").addEventListener("click", function () { setMode(true); });
+  $("auth-show").addEventListener("change", function () { let t = this.checked ? "text" : "password"; $("auth-pass").type = t; $("auth-pass2").type = t; });
+
+  authForm.addEventListener("submit", async function (e) {
+    e.preventDefault();
+    try {
+      let fd = new FormData(authForm), err = $("auth-err"), us = users();
+      let email = String(fd.get("email")).trim().toLowerCase(), pw = String(fd.get("password"));
+      if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) { err.textContent = "Enter a valid email address."; return; }
+      if (regMode) {
+        let name = String(fd.get("name")).trim(), phone = String(fd.get("phone")).trim();
+        if (!name || !phone) { err.textContent = "Please add your full name and phone number."; return; }
+        if (pw.length < 8) { err.textContent = "Password must be at least 8 characters."; return; }
+        if (pw !== String(fd.get("confirm"))) { err.textContent = "The two passwords don’t match."; return; }
+        if (us.some(function (u) { return u.email === email; })) { err.textContent = "That email already has an account. Use Sign in."; return; }
+        let avatarData = "";
+        let avFile = $("auth-avatar").files[0];
+        if (avFile) {
+          try { avatarData = await readPhoto(avFile, 400); }
+          catch (er) { err.textContent = "Profile photo couldn’t be read. Try a JPG or PNG."; return; }
+        }
+        let sl = salt(), u = {
+          name: name, email: email, phone: phone,
+          idno: String(fd.get("idno")).trim(),
+          avatar: avatarData,
+          salt: sl, hash: sha(sl + pw), created: Date.now()
+        };
+        us.push(u); saveUsers(us); currentUser = u;
+      } else {
+        let u = us.find(function (x) { return x.email === email; });
+        if (!u) { err.textContent = "No account found for that email. Tap “Create account” first."; return; }
+        if (!pw) { err.textContent = "Please enter your password."; return; }
+        if (u.hash !== sha(u.salt + pw)) { err.textContent = "Wrong password. Try again."; return; }
+        currentUser = u;
+      }
+      saveUserSession(); updateUserUI(); closeAuthDialog();
+      toast((regMode ? "Account created. Welcome, " : "Welcome back, ") + currentUser.name + ".");
+      render();
+    } catch (er) { $("auth-err").textContent = "Something went wrong: " + er.message; }
+  });
+
+  /* ---------- Ownership Verification Dialog Logic ---------- */
+  let verifyDlg = $("verify-dlg"), verifyForm = $("verify-form");
+  bindPreview($("verify-selfie"), $("verify-selfie-prev"));
+  bindPreview($("verify-id-photo"), $("verify-id-prev"));
+
+  function openVerifyDialog(item) {
+    if (!currentUser) { toast("Please sign in first so the finder knows who you are."); openAuthDialog(); return; }
+    if (!item.verifyHash) { toast("The finder didn’t set a security answer. Use “Show contact” to reach them."); return; }
+    activeClaimItem = item;
+    verifyForm.reset();
+    $("verify-err").textContent = "";
+    $("verify-id-prev").hidden = true;
+    $("verify-id-prev").src = "";
+    if (currentUser.avatar) {
+      $("verify-selfie-prev").src = currentUser.avatar;
+      $("verify-selfie-prev").hidden = false;
+    } else {
+      $("verify-selfie-prev").hidden = true;
+      $("verify-selfie-prev").src = "";
+    }
+    $("verify-q-box").innerHTML = "<strong>Security Check:</strong> " + escapeHtml(item.verify);
+    if (verifyDlg.showModal) verifyDlg.showModal(); else verifyDlg.setAttribute("open", "");
+  }
+  function closeVerifyDialog() { activeClaimItem = null; if (verifyDlg.close) verifyDlg.close(); else verifyDlg.removeAttribute("open"); }
+  verifyDlg.addEventListener("close", function () { activeClaimItem = null; });
+  $("verify-cancel").addEventListener("click", closeVerifyDialog);
+
+  verifyForm.addEventListener("submit", async function (e) {
+    e.preventDefault();
+    let it = activeClaimItem, ans = $("verify-answer").value;
+    if (!it || !currentUser) return;
+    if (!ans.trim()) { $("verify-err").textContent = "Please type your security answer."; return; }
+
+    let selfieFile = $("verify-selfie").files[0];
+    if (!selfieFile && !currentUser.avatar) {
+      $("verify-err").textContent = "Please attach a photo / selfie of yourself as owner proof.";
+      return;
+    }
+
+    let used = (it.tries && it.tries[S.me]) || 0;
+    if (used >= 3) { $("verify-err").textContent = "Too many wrong answers. Please contact the finder directly."; return; }
+    if (sha(norm(ans) + it.vsalt) !== it.verifyHash) {
+      let t = Object.assign({}, it.tries); t[S.me] = used + 1; patchItem(it, { tries: t });
+      $("verify-err").textContent = "That doesn’t match. " + (2 - used) + " tries left.";
+      return;
+    }
+
+    let ownerPhoto = currentUser.avatar || "";
+    if (selfieFile) {
+      try { ownerPhoto = await readPhoto(selfieFile, 480); }
+      catch (er) { $("verify-err").textContent = "Owner photo couldn’t be read. Try a JPG or PNG."; return; }
+    }
+
+    let idPhoto = "";
+    let idFile = $("verify-id-photo").files[0];
+    if (idFile) {
+      try { idPhoto = await readPhoto(idFile, 540); }
+      catch (er) { $("verify-err").textContent = "ID / proof photo couldn’t be read. Try a JPG or PNG."; return; }
+    }
+
+    let proofNote = $("verify-note").value.trim();
+
+    closeVerifyDialog();
+    tab = "returned";
+    guard(patchItem(it, {
+      status: "returned",
+      returnedAt: Date.now(),
+      ownerInfo: {
+        name: currentUser.name,
+        email: currentUser.email,
+        phone: currentUser.phone,
+        idno: currentUser.idno || "",
+        ownerPhoto: ownerPhoto,
+        idPhoto: idPhoto,
+        proofNote: proofNote,
+        how: "Passed security question & submitted photo proof"
+      }
+    }), "Ownership verified. Owner photo & proof are now recorded on the item.");
+  });
+
+  /* ---------- Handover Dialog Logic (Finder handing item to owner in person) ---------- */
+  let hoDlg = $("handover-dlg"), hoForm = $("handover-form");
+  bindPreview($("ho-owner-photo"), $("ho-owner-prev"));
+  bindPreview($("ho-id-photo"), $("ho-id-prev"));
+
+  function openHandoverDialog(item) {
+    activeHandoverItem = item;
+    hoForm.reset();
+    $("ho-err").textContent = "";
+    $("ho-owner-prev").hidden = true;
+    $("ho-id-prev").hidden = true;
+    if (hoDlg.showModal) hoDlg.showModal(); else hoDlg.setAttribute("open", "");
+    $("ho-name").focus();
+  }
+  function closeHandoverDialog() { activeHandoverItem = null; if (hoDlg.close) hoDlg.close(); else hoDlg.removeAttribute("open"); }
+  hoDlg.addEventListener("close", function () { activeHandoverItem = null; });
+  $("ho-cancel").addEventListener("click", closeHandoverDialog);
+
+  hoForm.addEventListener("submit", async function (e) {
+    e.preventDefault();
+    let it = activeHandoverItem;
+    if (!it) return;
+    let name = $("ho-name").value.trim();
+    let contact = $("ho-contact").value.trim();
+    if (!name || !contact) {
+      $("ho-err").textContent = "Please enter the owner’s full name and contact details.";
+      return;
+    }
+
+    let ownerPhoto = "";
+    let f1 = $("ho-owner-photo").files[0];
+    if (f1) {
+      try { ownerPhoto = await readPhoto(f1, 480); }
+      catch (er) { $("ho-err").textContent = "Owner photo couldn’t be read. Try a JPG or PNG."; return; }
+    }
+
+    let idPhoto = "";
+    let f2 = $("ho-id-photo").files[0];
+    if (f2) {
+      try { idPhoto = await readPhoto(f2, 540); }
+      catch (er) { $("ho-err").textContent = "ID proof photo couldn’t be read. Try a JPG or PNG."; return; }
+    }
+
+    let idno = $("ho-idno").value.trim();
+    let proofNote = $("ho-note").value.trim();
+
+    closeHandoverDialog();
+    tab = "returned";
+    guard(patchItem(it, {
+      status: "returned",
+      returnedAt: Date.now(),
+      ownerInfo: {
+        name: name,
+        email: contact,
+        phone: "",
+        idno: idno,
+        ownerPhoto: ownerPhoto,
+        idPhoto: idPhoto,
+        proofNote: proofNote,
+        how: "Finder verified owner in person"
+      }
+    }), "Handover recorded and item marked as returned.");
+  });
+
+  /* ---------- Setup Categories & Initialize ---------- */
+  let catSel = $("cat"), catForm = $("category");
+  let all = el("option", "", "All categories"); all.value = "all"; catSel.appendChild(all);
+  CATS.forEach(function (c) {
+    let o1 = el("option", "", c); o1.value = c; catSel.appendChild(o1);
+    let o2 = el("option", "", c); o2.value = c; catForm.appendChild(o2);
+  });
+  $("q").addEventListener("input", render);
+  catSel.addEventListener("change", render);
+  $("sort").addEventListener("change", render);
+  render();
+  init();
+})();
+</script>
+</body>
+</html>
